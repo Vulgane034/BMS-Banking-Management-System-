@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+python-jose[cryptography]
+passlib[bcrypt]
+pydantic
+requests
+pdfplumber
+pandas
+openpyxl
+python-multipart
+python-dotenv
