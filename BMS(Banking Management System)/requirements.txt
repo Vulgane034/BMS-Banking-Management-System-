@@ -5,3 +5,4 @@ tensorflow
 statsmodels
 matplotlib
 streamlit
+wbdata
