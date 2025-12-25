@@ -2,7 +2,9 @@ pandas
 numpy
 scikit-learn
 tensorflow
-pymc3
 statsmodels
 matplotlib
 streamlit
+wbdata
+xlrd
+tabula-py

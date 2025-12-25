@@ -1,0 +1,12 @@
+# Fichiers de cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Fichiers de log
+*.log
+
+# Fichiers de données temporaires
+BMS(Banking Management System)/data/*.csv
+BMS(Banking Management System)/data/*.pdf
+BMS(Banking Management System)/data/*.txt
