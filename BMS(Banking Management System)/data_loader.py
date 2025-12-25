@@ -1,60 +1,52 @@
-# data_loader.py
-import wbdata
 import pandas as pd
+import os
 
-# Définition des pays de la CEMAC et de leurs codes ISO
-CEMAC_COUNTRIES = {
-    "CMR": "Cameroun",
-    "COG": "Congo",
-    "GAB": "Gabon",
-    "TCD": "Tchad",
-    "CAF": "République Centrafricaine",
-    "GNQ": "Guinée Équatoriale"
-}
-
-# Définition des indicateurs de la Banque Mondiale que nous voulons utiliser
-INDICATORS = {
-    "FP.CPI.TOTL.ZG": "inflation",
-    "NY.GDP.MKTP.KD.ZG": "croissance_gdp"
-}
-
-def fetch_world_bank_data(country_code):
+def load_beac_data(file_path='data/CEMAC_2025.xls'):
     """
-    Télécharge les données macroéconomiques pour un pays donné depuis l'API de la Banque Mondiale.
+    Loads and parses BEAC monetary statistics from an Excel file.
+
+    Args:
+        file_path (str): The path to the Excel file.
+
+    Returns:
+        pandas.DataFrame: A DataFrame containing the parsed data.
     """
     try:
-        # Utiliser l'appel le plus simple et le plus compatible
-        df = wbdata.get_dataframe(INDICATORS, country=country_code)
+        # Read the 'BEAC' sheet, using row 3 as the header
+        df = pd.read_excel(file_path, sheet_name='BEAC', header=3)
 
-        # Renommer les colonnes
-        df = df.rename(columns=INDICATORS)
+        # Clean up column names
+        df.columns = df.columns.str.strip()
 
-        # L'index est 'country' et 'date', nous les réinitialisons
-        df = df.reset_index()
+        # Drop the first row which is empty
+        df = df.drop(0)
 
-        # Renommer la colonne 'date' en 'year' et convertir en numérique
-        df = df.rename(columns={'date': 'year'})
-        df['year'] = pd.to_numeric(df['year'])
+        # Rename the first column for clarity
+        df = df.rename(columns={'Fin de périodes                ACTIF': 'Period'})
 
-        # Filtrer pour ne garder que les années après 2000
-        start_year = 2000
-        df = df[df['year'] >= start_year]
+        # Drop columns that are entirely NaN
+        df = df.dropna(axis=1, how='all')
 
-        # Trier par année
-        df = df.sort_values('year', ascending=True)
+        # Forward fill NaNs in the 'Period' column
+        df['Period'] = df['Period'].fillna(method='ffill')
 
-        # Interpoler les valeurs manquantes
-        df = df.interpolate(method='linear', limit_direction='forward')
-        df = df.dropna()
+        # Drop rows where all data columns (except 'Period') are NaN
+        data_columns = [col for col in df.columns if col != 'Period']
+        df = df.dropna(subset=data_columns, how='all')
 
         return df
 
+    except FileNotFoundError:
+        print(f"File not found: {file_path}")
+        return None
     except Exception as e:
-        print(f"Erreur lors du téléchargement des données pour {country_code}: {e}")
-        return pd.DataFrame()
+        print(f"An error occurred: {e}")
+        return None
 
 if __name__ == '__main__':
-    cameroon_data = fetch_world_bank_data("CMR")
-    if not cameroon_data.empty:
-        print("Données pour le Cameroun :")
-        print(cameroon_data.head())
+    data = load_beac_data()
+    if data is not None:
+        print("Successfully loaded and cleaned BEAC data:")
+        print(data.head())
+        print("\nDataFrame Info:")
+        data.info()

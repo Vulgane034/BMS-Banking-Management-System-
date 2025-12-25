@@ -6,3 +6,5 @@ statsmodels
 matplotlib
 streamlit
 wbdata
+xlrd
+tabula-py
