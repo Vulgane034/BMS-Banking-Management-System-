@@ -1,52 +1,57 @@
 import pandas as pd
 import os
 
-def load_beac_data(file_path='data/CEMAC_2025.xls'):
+# Construire un chemin absolu vers le répertoire de données
+# Cela garantit que le fichier de données peut être trouvé quel que soit le répertoire de travail actuel
+DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
+DEFAULT_FILE_PATH = os.path.join(DATA_DIR, 'CEMAC_2025.xls')
+
+def load_beac_data(file_path=DEFAULT_FILE_PATH):
     """
-    Loads and parses BEAC monetary statistics from an Excel file.
+    Charge et analyse les statistiques monétaires de la BEAC à partir d'un fichier Excel.
 
     Args:
-        file_path (str): The path to the Excel file.
+        file_path (str): Le chemin vers le fichier Excel.
 
     Returns:
-        pandas.DataFrame: A DataFrame containing the parsed data.
+        pandas.DataFrame: Un DataFrame contenant les données analysées.
     """
     try:
-        # Read the 'BEAC' sheet, using row 3 as the header
+        # Lire la feuille 'BEAC', en utilisant la ligne 3 comme en-tête
         df = pd.read_excel(file_path, sheet_name='BEAC', header=3)
 
-        # Clean up column names
+        # Nettoyer les noms de colonnes
         df.columns = df.columns.str.strip()
 
-        # Drop the first row which is empty
+        # Supprimer la première ligne qui est vide
         df = df.drop(0)
 
-        # Rename the first column for clarity
+        # Renommer la première colonne pour plus de clarté
         df = df.rename(columns={'Fin de périodes                ACTIF': 'Period'})
 
-        # Drop columns that are entirely NaN
+        # Supprimer les colonnes qui sont entièrement NaN
         df = df.dropna(axis=1, how='all')
 
-        # Forward fill NaNs in the 'Period' column
-        df['Period'] = df['Period'].fillna(method='ffill')
+        # Remplir les NaN dans la colonne 'Period'
+        df['Period'] = df['Period'].ffill()
 
-        # Drop rows where all data columns (except 'Period') are NaN
+        # Supprimer les lignes où toutes les colonnes de données (sauf 'Period') sont NaN
         data_columns = [col for col in df.columns if col != 'Period']
         df = df.dropna(subset=data_columns, how='all')
 
         return df
 
     except FileNotFoundError:
-        print(f"File not found: {file_path}")
+        print(f"Fichier non trouvé : {file_path}")
         return None
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"Une erreur s'est produite : {e}")
         return None
 
 if __name__ == '__main__':
     data = load_beac_data()
     if data is not None:
-        print("Successfully loaded and cleaned BEAC data:")
+        print("Données de la BEAC chargées et nettoyées avec succès :")
         print(data.head())
-        print("\nDataFrame Info:")
+        print("\nInformations sur le DataFrame :")
         data.info()

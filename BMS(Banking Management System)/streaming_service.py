@@ -3,7 +3,8 @@ import time
 from bvmac_scraper import get_latest_boc_url, download_and_parse_boc
 import os
 
-LAST_URL_FILE = "BMS(Banking Management System)/data/last_boc_url.txt"
+# Le chemin est maintenant relatif au répertoire 'BMS(Banking Management System)'
+LAST_URL_FILE = "data/last_boc_url.txt"
 
 def check_for_new_data():
     """

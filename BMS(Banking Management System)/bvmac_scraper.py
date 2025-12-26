@@ -6,7 +6,8 @@ import pandas as pd
 import os
 
 BASE_URL = "https://www.bvm-ac.org/wp-content/uploads/"
-DATA_DIR = "BMS(Banking Management System)/data"
+# Le chemin est maintenant relatif au répertoire 'BMS(Banking Management System)'
+DATA_DIR = "data"
 
 def get_latest_boc_url():
     """
@@ -34,10 +35,7 @@ def find_and_clean_stock_table(tables):
         # Rechercher des mots-clés dans les en-têtes ou le contenu pour identifier la bonne table
         flat_list = [item for sublist in df.values.tolist() for item in sublist]
         if any("Code ISIN" in str(s) for s in flat_list) or any("Cours du jour" in str(s) for s in flat_list):
-            # C'est probablement la bonne table, essayons de la nettoyer
 
-            # La structure est complexe, nous allons essayer une approche de nettoyage plus robuste
-            # 1. Trouver la ligne d'en-tête
             header_row_index = -1
             for j, row in df.iterrows():
                 if "Code ISIN" in row.to_string():
@@ -48,12 +46,7 @@ def find_and_clean_stock_table(tables):
                 df.columns = df.iloc[header_row_index]
                 df = df.drop(range(header_row_index + 1))
 
-                # Nettoyer les noms de colonnes
                 df.columns = df.columns.str.strip()
-
-                # Sélectionner et renommer les colonnes pertinentes
-                # Cela nécessitera un débogage itératif
-                # Pour l'instant, nous allons retourner le DataFrame nettoyé tel quel
                 return df
     return None
 
