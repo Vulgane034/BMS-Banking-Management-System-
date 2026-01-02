@@ -10,6 +10,6 @@ BMS est un systeme de supervision et de regulation automatique et predictif des 
 | matplotlib
 | streamlit
 | wbdata
-| xlrd
+xlrd
 tabula-py
 
