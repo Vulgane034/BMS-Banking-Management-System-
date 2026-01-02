@@ -11,5 +11,5 @@ BMS est un systeme de supervision et de regulation automatique et predictif des 
 | streamlit
 | wbdata
 | xlrd
-| tabula-py
+tabula-py
 
