@@ -5,7 +5,7 @@ BMS est un systeme de supervision et de regulation automatique et predictif des 
 | pandas
 | numpy
 |scikit-learn
-| tensorflow
+tensorflow
 statsmodels
 matplotlib
 streamlit
